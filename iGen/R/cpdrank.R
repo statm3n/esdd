@@ -1,5 +1,7 @@
+## modified by HZ on 6/9/2019, add one more argument threhnew so that user can customize threshold
+## rather than using 2SD estimator
 cpdrank <-
-function(newinh, A, u)
+function(newinh, threhnew, A, u)
 {
   source("thredec.R") ## load threhhold deciding function
   source("inbin.R")
@@ -7,7 +9,8 @@ function(newinh, A, u)
   y <- inbin(u)$y
   
   threhnew <- thredec(u, A, newinh)
-  newlabel <- 1 * (newinh > threhnew)
+## newlabel <- 1 * (newinh > threhnew) 
+## comment out so user can customize threshold values
   atomnew <- paste(newlabel, collapse = "")
   
   
@@ -28,8 +31,11 @@ function(newinh, A, u)
   }else{
     atomdif <- colSums(t(y[,A]-newlabel))
     
-    part <- y[atomdif==min(atomdif),]
+    ## part <- y[atomdif==min(atomdif),]
+    ## take into considesration when part is vector
+    if(sum(atomdif==min(atomdif))>1){
     part <- part[, -A]
+    }else{part <- part[-A]}
     
     if(is.vector(part)==TRUE)
     {
